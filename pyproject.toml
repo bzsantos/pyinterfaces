@@ -1,6 +1,6 @@
 [project]
 name = "pyinterfaces"
-version = "0.3.0"
+version = "0.4.0"
 description = "Interface in POO with Python"
 authors = [
     {name = "Bruno Zolotareff",email = "brunozolotareff@gmail.com"}

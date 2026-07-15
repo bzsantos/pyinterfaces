@@ -2,52 +2,10 @@ import codecs
 import io
 import re
 
-def converter_tipos_java_para_python(argumentos_str: str) -> str:
-    """
-    Transforma 'String titular, int idade' em 'titular: str, idade: int'.
-    Também garante que o 'self' seja mantido corretamente se o usuário colocar.
-    """
-    mapa_tipos = {
-        'String': 'str',
-        'int': 'int',
-        'double': 'float',
-        'float': 'float',
-        'boolean': 'bool',
-        'void': 'None',
-        'List': 'list',
-        'Map': 'dict'
-    }
-    
-    argumentos_limpos = argumentos_str.strip()
-    if not argumentos_limpos:
-        return "self"
-        
-    partes = [p.strip() for p in argumentos_limpos.split(',')]
-    novos_args = []
-    
-    if len(partes) > 0 and partes[0] == 'self':
-        novos_args.append('self')
-        partes = partes[1:]
-    else:
-        novos_args.append('self')
-        
-    for parte in partes:
-        if not parte:
-            continue
-        componentes = re.split(r'\s+', parte)
-        if len(componentes) == 2:
-            tipo_java, nome_var = componentes
-            tipo_python = mapa_tipos.get(tipo_java, tipo_java)
-            novos_args.append(f"{nome_var}: {tipo_python}")
-        else:
-            novos_args.append(parte)
-            
-    return ", ".join(novos_args)
-
 def traduzir_sintaxe_java(texto: str) -> str:
     """
-    Varre o arquivo de texto substituindo a sintaxe 'Interface Nome:'
-    por classes Python puras usando abc.ABC, mantendo a indentação nativa.
+    Substitui 'Interface Nome:' por 'class Nome(ABC):' e adiciona 
+    @abstractmethod em todos os métodos que começam com 'def'.
     """
     linhas = texto.split('\n')
     resultado = ["from abc import ABC, abstractmethod\n"]
@@ -62,24 +20,25 @@ def traduzir_sintaxe_java(texto: str) -> str:
             dentro_da_interface = True
             continue
             
-        # Detecta se a linha voltou para a parede esquerda (fim do bloco da interface)
+        # Detecta se o bloco da interface acabou (linha sem espaços na esquerda)
         if dentro_da_interface and linha.strip() and not linha.startswith(' '):
             dentro_da_interface = False
 
         if dentro_da_interface:
-            # 2. Captura os métodos indentados de dentro da interface
             linha_limpa = linha.strip()
-            if linha_limpa:
-                metodo_match = re.match(r'(?:\w+\s+)?(\w+)\s*\((.*?)\)', linha_limpa)
-                if metodo_match:
-                    nome_metodo = metodo_match.group(1)
-                    args_brutos = metodo_match.group(2)
-                    
-                    args_traduzidos = converter_tipos_java_para_python(args_brutos)
-                    
-                    resultado.append(f"    @abstractmethod")
-                    resultado.append(f"    def {nome_metodo}({args_traduzidos}):")
-                    resultado.append(f"        pass")
+            # 2. Captura métodos que começam com 'def' dentro da interface
+            if linha_limpa.startswith('def '):
+                # Garante que o método termine com ':' esperado pelo Python
+                if not linha_limpa.endswith(':'):
+                    linha_limpa += ':'
+                
+                # Injeta o 'self' automaticamente caso o usuário não tenha colocado
+                if '(self' not in linha_limpa:
+                    linha_limpa = linha_limpa.replace('(', '(self, ').replace('(self, )', '(self)')
+                
+                resultado.append(f"    @abstractmethod")
+                resultado.append(f"    {linha_limpa}")
+                resultado.append(f"        pass")
         else:
             resultado.append(linha)
             

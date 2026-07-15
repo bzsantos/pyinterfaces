@@ -1,6 +1,6 @@
 [project]
 name = "pyinterfaces"
-version = "0.5.2"
+version = "0.6.0"
 description = "Interface in POO with Python"
 authors = [
     {name = "Bruno Zolotareff",email = "brunozolotareff@gmail.com"}
@@ -8,12 +8,14 @@ authors = [
 readme = "README.md"
 keywords = ["interface", "java", "syntax", "brunozolotareff", "pyinterfaces"]
 packages = [{include = "pyinterfaces"}]
-pyinterfaces-init = "pyinterfaces.cli:inicializar_projeto"
 license = "MIT"
 requires-python = ">=3.10"
 dependencies = [
 ]
 
+[tool.poetry.scripts]
+pyinterfaces-init = "pyinterfaces.cli:inicializar_projeto"
+pyinterfaces-generate = "pyinterfaces.cli:gerar_modulo"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]

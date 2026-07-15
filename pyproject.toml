@@ -1,0 +1,24 @@
+[project]
+name = "pyinterfaces"
+version = "0.1.1"
+description = "Interface in POO with Python"
+authors = [
+    {name = "Bruno Zolotareff",email = "brunozolotareff@gmail.com"}
+]
+readme = "README.md"
+keywords = ["interface", "java", "syntax", "brunozolotareff", "pyinterfaces"]
+packages = [{include = "pyinterfaces"}]
+license = "MIT"
+requires-python = ">=3.10"
+dependencies = [
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[dependency-groups]
+dev = [
+    "pytest (>=9.1.1,<10.0.0)"
+]

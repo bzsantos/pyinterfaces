@@ -25,12 +25,10 @@ def converter_tipos_java_para_python(argumentos_str: str) -> str:
     partes = [p.strip() for p in argumentos_limpos.split(',')]
     novos_args = []
     
-    # CORREÇÃO AQUI: Verificamos se 'self' está contido na lista de partes
     if len(partes) > 0 and partes[0] == 'self':
         novos_args.append('self')
         partes = partes[1:]
     else:
-        # Injeta o 'self' automaticamente (padrão Java puro)
         novos_args.append('self')
         
     for parte in partes:
@@ -48,30 +46,29 @@ def converter_tipos_java_para_python(argumentos_str: str) -> str:
 
 def traduzir_sintaxe_java(texto: str) -> str:
     """
-    Varre o arquivo de texto substituindo a sintaxe 'Interface Nome { ... }'
-    por classes Python puras usando abc.ABC, tipagem estrita e @abstractmethod.
+    Varre o arquivo de texto substituindo a sintaxe 'Interface Nome:'
+    por classes Python puras usando abc.ABC, mantendo a indentação nativa.
     """
     linhas = texto.split('\n')
     resultado = ["from abc import ABC, abstractmethod\n"]
     dentro_da_interface = False
     
     for linha in linhas:
-        # 1. Detecta o início da declaração: 'Interface Nome {'
-        inicio_match = re.match(r'\s*Interface\s+(\w+)\s*\{', linha)
+        # 1. Detecta o início da declaração: 'Interface Nome:' (com ou sem espaços)
+        inicio_match = re.match(r'\s*Interface\s+(\w+)\s*:', linha)
         if inicio_match:
             nome_interface = inicio_match.group(1)
             resultado.append(f"class {nome_interface}(ABC):")
             dentro_da_interface = True
             continue
             
+        # Detecta se a linha voltou para a parede esquerda (fim do bloco da interface)
+        if dentro_da_interface and linha.strip() and not linha.startswith(' '):
+            dentro_da_interface = False
+
         if dentro_da_interface:
-            # 2. Detecta o fechamento da interface com a chave '}'
-            if '}' in linha:
-                dentro_da_interface = False
-                continue
-            
-            # 3. Captura o método com padrão Java: TipoRetorno nomeMetodo(Argumentos)
-            linha_limpa = linha.strip().replace(';', '')
+            # 2. Captura os métodos indentados de dentro da interface
+            linha_limpa = linha.strip()
             if linha_limpa:
                 metodo_match = re.match(r'(?:\w+\s+)?(\w+)\s*\((.*?)\)', linha_limpa)
                 if metodo_match:

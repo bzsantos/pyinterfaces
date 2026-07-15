@@ -1,19 +1,17 @@
 # -*- coding: py_interface -*-
 
-Interface AbrirConta {
-    void abrir(String titular, double saldoInicial);
-    boolean fechar();
-}
+Interface AbrirConta:
+    void abrir(String titular, double saldoInicial)
+    boolean fechar()
 
 class ContaCorrente(AbrirConta):
     def abrir(self, titular: str, saldoInicial: float):
-        print(f"Conta Java aberta para {titular} com saldo de R${saldoInicial}")
+        print(f"Sucesso! Conta do {titular} aberta com R${saldoInicial}.")
         
     def fechar(self) -> bool:
-        print("Conta encerrada.")
+        print("Conta fechada.")
         return True
 
-# Execução que gera o texto no terminal
 conta = ContaCorrente()
-conta.abrir("Leandro Reginaldo", 5000.0)
+conta.abrir("Bruno", 1000.0)
 conta.fechar()

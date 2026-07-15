@@ -1,31 +1,30 @@
 from pyinterfaces.compilador import traduzir_sintaxe_java
 
-def test_deve_traduzir_interface_simples_para_classe_abc():
-    # Código simulado que o usuário escreveria
+def test_deve_traduzir_interface_com_dois_pontos_e_indentacao():
+    # Testa a nova sintaxe limpa sem chaves
     codigo_entrada = """
-    Interface Conta {
+    Interface Conta:
         abrir(self)
-    }
     """
     
     codigo_traduzido = traduzir_sintaxe_java(codigo_entrada)
     
-    # Valida se o compilador inseriu as tags do Python corretamente
+    # Valida se o compilador inseriu as estruturas do Python corretamente
     assert "class Conta(ABC):" in codigo_traduzido
     assert "@abstractmethod" in codigo_traduzido
     assert "def abrir(self):" in codigo_traduzido
 
 
-def test_deve_remover_pontos_e_virgulas_estilo_java():
+def test_deve_traduzir_tipos_estritos_do_java_nos_argumentos():
+    # Testa se o motor converte 'String titular' para 'titular: str' e ignora o 'void'
     codigo_entrada = """
-    Interface Banco {
-        conectar(self);
-        desconectar(self);
-    }
+    Interface Banco:
+        void conectar(String servidor, int porta)
     """
     
     codigo_traduzido = traduzir_sintaxe_java(codigo_entrada)
     
-    # Garante que o ponto e vírgula sumiu para o Python não quebrar
-    assert ";" not in codigo_traduzido
-    assert "def conectar(self):" in codigo_traduzido
+    # Garante que o método foi mapeado com a tipagem correta do Python
+    assert "class Banco(ABC):" in codigo_traduzido
+    assert "@abstractmethod" in codigo_traduzido
+    assert "def conectar(self, servidor: str, porta: int):" in codigo_traduzido

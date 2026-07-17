@@ -35,11 +35,41 @@ You can install `pyinterfaces` via `pip` or add it to your project using `poetry
 pip install pyinterfaces
 ```
 
-Or with Poetry:
+- Poetry:
 ```bash
-poetry add pyinterfaces
+poetry add pyinterfaces or python -m poetry add pyinterfaces
+```
+##Directories
+
+Project start:
+
+```bash
+- PIP:
+pyinterfaces-init
+
+- Poetry:
+poetry pyinterfaces-init
 ```
 
+```bash
+- PIP:
+pyinterfaces-generate app
+- Poetry:
+poetry pyinterfaces-generate app
+```
+
+- my_project/
+- ├── modules/
+- │   └── app/
+- │       ├── __init__.py
+- │       ├── interfaces.py     # Interfaces / Contract (ML Inputs & Outputs)
+- │       ├── repository.py     # 🧠 @Repository (Loads scikit-learn/onnx and runs predict)
+- │       ├── service.py        # @Service (Applies business rules before/after ML)
+- │       ├── controller.py     # @RestController (Receives the JSON to be predicted)
+- │       └── views/
+- │           └── index.html    # UI interface (Dashboard to show ML insights)
+- └── main.py                   # IoC Container bootstrap
+  
 ---
 
 ## 💻 Usage
